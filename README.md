@@ -1,54 +1,56 @@
-# AI Paper Reading · AI 论文阅读
+# AI Paper Reading
 
-**把一篇论文的故事线、模型框架和实验依据读明白。**
+**English** | [简体中文](README.zh-CN.md)
 
-给 AI Agent 一个 PDF、arXiv 链接或论文名称，先准备好原文、图表与代码，再按需要选择：一次讲完的**概览**，或结合原图、公式和具体样例的**精读**。
+**Understand a paper's motivation, model architecture, and experimental evidence.**
 
-[快速开始](#快速开始) · [两种阅读模式](#两种阅读模式) · [材料与目录](#材料与目录) · [致谢与许可](#致谢与许可)
+Give your AI agent a PDF, an arXiv link, or a paper title. It prepares the paper, figures, tables, and code, then guides you through either a single-response **Overview** or a **Deep Read** with original visuals, equations, and worked examples.
 
-## 两种阅读模式
+[Quick start](#quick-start) · [Reading modes](#reading-modes) · [Materials and organization](#materials-and-organization) · [Acknowledgments and license](#acknowledgments-and-license)
 
-| 模式 | 适合什么时候 | 讲什么 | 输出节奏 |
+## Reading modes
+
+| Mode | Best for | Coverage | Pace |
 |---|---|---|---|
-| **概览** | 第一次接触，先建立整体理解 | 基本情况、动机、故事线、模型框架 | 一次回复完整输出 |
-| **精读** | 想真正理解方法和实验 | 动机 → 方法 → 训练 → 实验 | 默认分站推进，支持跳站或一次讲完 |
+| **Overview** | Building an initial understanding | Paper context, motivation, research story, and model architecture | One complete response |
+| **Deep Read** | Understanding the method and its evidence in detail | Motivation → Method → Training → Experiments | Stage by stage by default; skip ahead or request everything at once |
 
-用户在开讲前给出的具体要求优先。只问某张图、某个公式或一段代码时，直接回答该问题；仅提供论文而未指明模式时，默认概览。
+Your specific instructions take priority. If you ask about a particular figure, equation, or piece of code, the agent addresses it directly. When you provide a paper without choosing a mode, it starts with an Overview.
 
-### 概览：先讲清为什么做、怎么做
+### Overview: why the work matters and how it works
 
-从“研究什么问题、过去卡在哪里、作者的关键想法”开始，再展示论文原框架图，沿数据流解释各模块为什么存在、如何连接，最后串起一次输入到输出的过程。
+Start with the research problem, the limitations of prior approaches, and the authors' central idea. Then view the paper's original architecture diagram and follow the data through each component: why it exists, how it connects to the others, and how an input becomes an output.
 
-重点是**故事线和模型框架**，不会默认展开所有公式，也不需要每讲一段都回复“继续”。
+The focus is the **research story and model architecture**. A full equation walkthrough is optional, and you do not need to keep saying “continue.”
 
-### 精读：四站走通一篇论文
+### Deep Read: four stages through a paper
 
 ```text
-① 动机
-   问题、已有方法的不足、作者的关键假设
+① Motivation
+   The problem, gaps in prior work, and the authors' key hypothesis
       ↓
-② 方法
-   原框架图、模块设计目的、每个公式与符号
+② Method
+   Original architecture figures, design rationale, every equation and symbol
       ↓
-③ 训练
-   一条样本 → 数据处理 → 输入输出信息流 → 损失 → 参数更新
-   再用具体例子，对照推理过程与官方代码
+③ Training
+   One sample → preprocessing → input/output flow → loss → parameter updates
+   Worked examples, with inference and official code for comparison
       ↓
-④ 实验
-   主实验、消融，以及论文实际提供的其他实验与局限
+④ Experiments
+   Main results, ablations, and other analyses and limitations in the paper
 ```
 
-- **方法不止列模块。** 每项设计要对应它解决的问题，公式要解释符号、形状、运算和相互关系。
-- **训练不止报配置。** 从一条样本出发，让输入、中间表示、预测、监督信号和更新过程连起来。
-- **实验不止念数字。** 展示原表原图，解释比较条件、关键结果，以及这些结果支持多大的结论。
-- **图表直接展示。** 先说明怎么读，再解释细节；密集图片可放大，表格可单独裁出。
-- **不懂就换讲法。** 用具体数字、小尺寸例子、朴素方案对比与代码对照帮助理解。
+- **Explain design choices.** Connect each component to the problem it solves. Unpack symbols, tensor shapes, operations, and relationships between equations.
+- **Trace an actual training example.** Follow the input, intermediate representations, predictions, supervision, and parameter updates.
+- **Interpret the evidence.** Show original tables and figures, explain comparison conditions, and distinguish what the results support from what they leave unresolved.
+- **Display the visuals.** Explain how to read each figure before discussing the details. Enlarge dense panels or crop a table for a closer look.
+- **Make abstract ideas concrete.** Use small numerical examples, simple alternatives, and code walkthroughs when an explanation needs another angle.
 
-## 快速开始
+## Quick start
 
-需要能读取文件、访问网络、执行 Python 并展示图片的 AI Agent。脚本依赖 **Python 3.9+** 和 **PyMuPDF**；阅读与讲解由 Agent 完成，脚本本身不会调用模型。
+Use an AI agent that can read files, access the web, run Python, and display images. The preparation scripts require **Python 3.9+** and **PyMuPDF**. The agent handles reading and explanation; the scripts do not call a model themselves.
 
-### 安装到 Codex
+### Install in Codex
 
 ```bash
 git clone https://github.com/Xielewei/ai-paper-reading.git \
@@ -59,9 +61,9 @@ python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
 ```
 
-让 Agent 使用该目录下的 `.venv/bin/python` 运行材料脚本，或使用其他已安装 PyMuPDF 的 Python 环境。
+Have the agent run the preparation scripts with this directory's `.venv/bin/python`, or another Python environment with PyMuPDF installed.
 
-### 安装到 Claude Code
+### Install in Claude Code
 
 ```bash
 git clone https://github.com/Xielewei/ai-paper-reading.git \
@@ -72,124 +74,129 @@ python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
 ```
 
-其他 Agent 可以将仓库放在工作目录，并让它读取 [SKILL.md](SKILL.md)。图片展示方式由当前界面决定。
+For other agents, place the repository in your workspace and ask the agent to read [SKILL.md](SKILL.md). Image display depends on the interface you use.
 
-### 直接这样说
+### Example prompts
 
 ```text
-用 $ai-paper-reading 概览这篇 PDF，重点讲故事线和模型框架。
+Use $ai-paper-reading to give me an overview of this PDF.
+Focus on the research story and model architecture.
 
-帮我找到并下载这篇论文，放到“医学影像”领域下面，然后概览。
+Find and download this paper, save it under Medical Imaging,
+and give me an overview.
 
-精读这篇论文，按照动机、方法、训练、实验来。
+Read this paper in depth: motivation, method, training, and experiments.
 
-方法部分每个公式和符号都讲清楚，结合原框架图解释设计目的。
+Explain every equation and symbol in the method section.
+Use the original architecture figure to explain the design choices.
 
-拿一条训练样本，把输入、输出和 loss 的计算走一遍。
+Walk through one training sample, including the inputs, outputs,
+and loss computation.
 
-单独展示表 2，解释主实验与消融分别说明了什么。
+Show Table 2 on its own and explain what the main results
+and ablations establish.
 
-把刚才讨论的三个问题整理成笔记。
+Turn the three questions we just discussed into notes.
 ```
 
-上面的 `$ai-paper-reading` 是 Codex 的显式调用写法；其他 Agent 使用其对应的 skill 调用方式。
+`$ai-paper-reading` is the explicit skill invocation syntax in Codex. Use the corresponding invocation mechanism in other agents. The skill instructions and reference examples are currently written in Chinese; you can specify your preferred explanation language in your prompt.
 
-## 材料与目录
+## Materials and organization
 
-默认论文库是 **`~/Desktop/paper/`**，按“领域 → 论文”两级归档：
+The default paper library is **`~/Desktop/paper/`**, organized by **field → paper**:
 
 ```text
 ~/Desktop/paper/
-└── 医学影像/
-    └── <论文简称>_<年份>_MICCAI/
+└── Medical Imaging/
+    └── <short-name>_<year>_MICCAI/
         ├── paper.pdf
-        ├── source/              # 能获取到的 arXiv LaTeX 源码
-        ├── paper.tex            # 展开后的正文，用于阅读与定位
-        ├── paper.txt            # 按页提取的文本
-        ├── outline.md           # 章节、公式位置索引
-        ├── meta.json            # 标题、作者、日期、相关链接
+        ├── source/              # arXiv LaTeX sources, when available
+        ├── paper.tex            # Flattened source for reading and navigation
+        ├── paper.txt            # Text extracted page by page
+        ├── outline.md           # Section and equation locations
+        ├── meta.json            # Title, authors, dates, and relevant links
         ├── figures/
         │   ├── fig-*.png
         │   ├── tab-*.png
         │   ├── index.md
         │   ├── index.json
-        │   └── _contact.png     # 图表总览，便于检查裁剪
-        └── code/                # 找到的官方代码，浅克隆
+        │   └── _contact.png     # Contact sheet for checking crops
+        └── code/                # Shallow clone of the identified official code
 ```
 
-目录示例中的字段是占位说明，不代表一篇真实论文。
+This directory tree uses placeholders rather than describing a real paper.
 
-**命名规则：**优先使用论文明确给出的简称；没有简称而有小标题时用小标题，否则使用文章标题。随后加年份；已正式发表且能核实 venue 时，加会议或期刊简称，例如 MICCAI、CVPR、TMI。仅有预印本或尚未确认发表时，不猜测会议。
+**Naming:** use the paper's stated acronym or short name first; otherwise use its subtitle, or its full title if no subtitle is available. Append the year. Add a verified publication venue using its abbreviation, such as MICCAI, CVPR, or TMI. Do not guess a venue for a preprint or an unconfirmed publication.
 
-支持本地 PDF、PDF 直链、arXiv ID/链接和已有论文目录。也可以先让 Agent 按论文名称寻找原文。本地 PDF 保留原件；同一篇重复阅读复用已有目录。
+Supported inputs include local PDFs, direct PDF URLs, arXiv IDs or links, and existing paper directories. You can also ask the agent to locate a paper by title. Local PDFs are copied while preserving the original; revisiting a paper reuses its existing directory.
 
-### 笔记：你说记录，才记录
+### Notes only when you ask
 
-**默认不创建 `精读笔记.md`，不自动保存对话或逐站追加问答。**
+**No reading-notes file (`精读笔记.md`) is created by default. Conversations and stage-by-stage Q&A are not automatically saved.**
 
-只有明确说“整理成笔记”“记录这些问题”等，才按指定范围生成或更新。材料大纲和图表索引仍会自动准备，它们只用于检索定位。
+Ask explicitly to “turn this into notes” or “record these questions” to create or update notes within the requested scope. Material outlines and figure indexes are still generated automatically for navigation.
 
-`profile.md` 用来记录背景与讲解偏好；论文笔记与问答遵循上述按需规则。`profile.md` 已加入 Git 忽略列表。
+`profile.md` stores background and explanation preferences. Paper notes and Q&A follow the opt-in rule above. `profile.md` is excluded from Git tracking.
 
-### 直接运行材料脚本
+### Run the preparation scripts directly
 
-在仓库根目录运行；名称、年份和 venue 应先由用户或 Agent 核实：
+Run these commands from the repository root. The user or agent should first verify the paper name, year, and venue:
 
 ```bash
-# 导入本地 PDF；没有正式 venue 时省略 --venue
+# Import a local PDF; omit --venue if there is no confirmed publication venue.
 .venv/bin/python scripts/fetch_paper.py "/path/to/paper.pdf" \
-  --field "医学影像" --name "已核实的论文简称" --year 2025 --venue MICCAI
+  --field "Medical Imaging" --name "VerifiedShortName" --year 2025 --venue MICCAI
 
-# 从 arXiv 准备材料；这是 π0 的预印本示例
+# Prepare materials from arXiv; this example uses the pi0 preprint.
 .venv/bin/python scripts/fetch_paper.py 2410.24164 \
-  --field "具身智能" --name "pi0" --year 2024
+  --field "Embodied AI" --name "pi0" --year 2024
 
-# 已有目录：补充缺失材料，重新生成文本、索引和自动图表
-.venv/bin/python scripts/fetch_paper.py "$HOME/Desktop/paper/具身智能/pi0_2024"
+# Revisit a directory: fill missing materials and rebuild text, indexes, and automatic crops.
+.venv/bin/python scripts/fetch_paper.py "$HOME/Desktop/paper/Embodied AI/pi0_2024"
 
-# 未自动找到代码时，手动指定已确认的官方仓库
-.venv/bin/python scripts/fetch_paper.py "$HOME/Desktop/paper/具身智能/pi0_2024" \
+# Supply a verified official repository if automatic discovery did not find it.
+.venv/bin/python scripts/fetch_paper.py "$HOME/Desktop/paper/Embodied AI/pi0_2024" \
   --code https://github.com/Physical-Intelligence/openpi
 
-# 从 PDF 的第 4 页裁出局部；坐标为 0–1 比例
+# Crop a region from PDF page 4; coordinates are normalized to 0–1.
 .venv/bin/python scripts/crop.py "/path/to/paper.pdf" \
   --page 4 0.08 0.10 0.92 0.55 -o "/path/to/detail.png"
 ```
 
-`--root` 修改论文库根目录，`--dest` 指定完整论文目录，`--no-clone` 只寻找代码链接而不克隆。字段、图表和下载选项可以用 `--help` 查看。
+Use `--root` to change the library root, `--dest` to set the full paper directory, or `--no-clone` to discover code links without cloning. Run `--help` for the available metadata, figure, and download options.
 
-已有的用户图表不会混进自动裁图目录：若 `figures/` 里有用户整理的图，自动图表会放到 `figures-auto/`。原 PDF、源码和代码通常复用，文本与自动索引会重建；自己编辑过的自动产物应先另存。
+If `figures/` already contains user-managed images, automatic crops go into `figures-auto/`. The original PDF, sources, and code are generally reused; extracted text and automatic indexes are rebuilt. Save separate copies of generated files you have edited manually.
 
-## 文件导航
+## Repository guide
 
-| 文件 | 用途 |
+| File | Purpose |
 |---|---|
-| [SKILL.md](SKILL.md) | Agent 执行的完整阅读流程 |
-| [references/examples.md](references/examples.md) | 框架、数据、公式与代码走读的讲解示例 |
-| [references/notes-template.md](references/notes-template.md) | 用户要求记录时才使用的笔记模板 |
-| [profile.example.md](profile.example.md) | 背景、知识基础和举例偏好模板 |
-| [scripts/fetch_paper.py](scripts/fetch_paper.py) | PDF、源码、元数据、代码与材料索引 |
-| [scripts/extract_figures.py](scripts/extract_figures.py) | 自动提取图表及总览拼图 |
-| [scripts/crop.py](scripts/crop.py) | 原图、表格、公式的局部裁剪 |
+| [SKILL.md](SKILL.md) | Complete reading workflow for the agent |
+| [references/examples.md](references/examples.md) | Explanation examples for architectures, data, equations, and code |
+| [references/notes-template.md](references/notes-template.md) | Notes template, used only when requested |
+| [profile.example.md](profile.example.md) | Template for background, prior knowledge, and example preferences |
+| [scripts/fetch_paper.py](scripts/fetch_paper.py) | PDF, sources, metadata, code, and material indexes |
+| [scripts/extract_figures.py](scripts/extract_figures.py) | Figure and table extraction, plus a contact sheet |
+| [scripts/crop.py](scripts/crop.py) | Detail crops of figures, tables, and equations |
 
-## 已知限制与验证
+## Limitations and validation
 
-- 图表裁剪依赖 caption 与版式规则，复杂表格、跨栏图可能需要手动重裁。Agent 应在讲解前检查原图。
-- 只有能获取源码的论文才有 `source/` 和 `paper.tex`；非 arXiv 或仅上传 PDF 的论文可能没有源码。
-- 自动寻找代码依赖论文与项目页面的链接，可能漏检或误选，需要核实论文与实现的对应关系。
-- 仓库代码默认只读，不替用户运行论文的训练脚本或安装其依赖。
-- 不提供训练结果复现保证。材料准备成功也不代表论文结论已被验证。
+- Automatic cropping relies on captions and layout heuristics. Complex tables and multi-column figures may need manual recropping; the agent should inspect the original visuals before explaining them.
+- `source/` and `paper.tex` are available only when the source can be retrieved. Papers outside arXiv or supplied only as PDFs may have no LaTeX source.
+- Code discovery uses links in the paper and project pages. It can miss or misidentify a repository, so the correspondence between the paper and implementation should be checked.
+- Paper code is read by default. Training scripts and their dependencies are not run or installed on your behalf unless requested.
+- Preparing materials does not validate the paper's conclusions or guarantee reproducible training results.
 
-材料流程已用合成 PDF 验证：本地导入、目录命名、源码展开、图表提取、局部裁剪、已有材料保护及不自动生成笔记。URL 下载和代码克隆分支使用模拟响应测试，尚未做真实网络下载的端到端验证。
+Synthetic-PDF checks cover local import, directory naming, LaTeX expansion, figure and table extraction, detail cropping, preservation of existing materials, and the absence of automatic notes. URL downloads and code cloning are tested with mocked responses; live network downloads have not yet been validated end to end.
 
-运行同类检查：
+Run the checks with:
 
 ```bash
 .venv/bin/python tests/smoke_test.py
 ```
 
-## 致谢与许可
+## Acknowledgments and license
 
-感谢 [skJack/kelip-paper-reading](https://github.com/skJack/kelip-paper-reading) 提供的阅读流程、材料准备脚本与讲解示例，本项目在其基础上进行了定制。
+Thanks to [skJack/kelip-paper-reading](https://github.com/skJack/kelip-paper-reading) for the reading workflow, material preparation scripts, and explanation examples that this skill builds on.
 
-使用 [MIT License](LICENSE)，保留原作者版权声明。
+Released under the [MIT License](LICENSE), with the original copyright notice retained.
