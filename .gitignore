@@ -1,0 +1,18 @@
+# Personal preferences and local reading materials
+profile.md
+/papers/
+/paper/
+/work/
+
+# Python and local environments
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+
+# Local configuration and OS files
+.env
+.env.*
+.DS_Store

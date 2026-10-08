@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI 论文阅读"
+  short_description: "按领域整理 AI 论文，支持概览与精读、原图表解读及按需笔记"
+  default_prompt: "使用 $ai-paper-reading 阅读这篇论文，按我的要求选择概览或精读，并展示相关原图和表格。"
