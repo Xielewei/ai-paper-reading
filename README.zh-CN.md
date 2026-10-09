@@ -105,7 +105,10 @@ python3 -m venv .venv
 └── 医学影像/
     └── <论文简称>_<年份>_MICCAI/
         ├── paper.pdf
-        ├── source/              # 能获取到的 arXiv LaTeX 源码
+        ├── supplemental.pdf     # 独立附录，若有
+        ├── supplemental/        # 附录 PDF、文本、大纲、图表
+        ├── versions/            # 其他保留版本，各自独立存放
+        ├── source/              # 与所选 PDF 同版本的 LaTeX 源码，若可获取
         ├── paper.tex            # 展开后的正文，用于阅读与定位
         ├── paper.txt            # 按页提取的文本
         ├── outline.md           # 章节、公式位置索引
@@ -121,9 +124,25 @@ python3 -m venv .venv
 
 目录示例中的字段是占位说明，不代表一篇真实论文。
 
-**命名规则：**优先使用论文明确给出的简称；没有简称而有小标题时用小标题，否则使用文章标题。随后加年份；已正式发表且能核实 venue 时，加会议或期刊简称，例如 MICCAI、CVPR、TMI。仅有预印本或尚未确认发表时，不猜测会议。
+**命名按已核实的正式发表信息：**优先使用论文明确给出的简称，否则用小标题，再否则用完整标题。已被会议或期刊正式接收/发表且有官方依据时，始终使用该会议或期刊的年份与简称，例如 `VCD_2024_CVPR`，即使实际阅读的是 arXiv PDF。投稿不等于录用；尚未确认正式发表时，才使用所选预印本版本的年份并省略 venue。
 
-支持本地 PDF、PDF 直链、arXiv ID/链接和已有论文目录。也可以先让 Agent 按论文名称寻找原文。本地 PDF 保留原件；同一篇重复阅读复用已有目录。
+### 多版本 PDF 怎么选
+
+用户未指定版本时，Agent 检查官方发表页、arXiv 版本历史和作者项目页：
+
+1. 只要有版本提供附录，就在**正文与附录都能提供的版本中选最新**。内含附录的单个 PDF，以及同一版本的正文 + 独立 supplement，都算完整。
+2. 每个版本都有附录时选最新；确认每个版本都没有附录时选最新正文。
+3. 新旧按实际发布/修订信息判断，包括 arXiv 版本号和更新日期；不用下载时间或本地修改时间，也不默认会议 PDF 一定最新。
+
+未找到或暂时下载不到的附录记为未知/不可得，继续核查并披露缺口；版本日期不足以比较时说明不确定性。不能跨版本拼接正文和附录。`meta.json` 分别保存用于命名的发表身份和用于阅读的 PDF 版本，并记录候选版本、来源链接、附录状态和选择理由。版本比较由 Agent 完成，`fetch_paper.py` 仅准备指定材料，不会自动发现或排序版本。
+
+### 最终存放位置与核验
+
+支持本地 PDF、PDF 直链、arXiv ID/链接和已有论文目录，也可以按标题寻找论文。本地 PDF 保留原件，同篇重复阅读复用已有目录。
+
+除非用户指定其他位置，最终论文库是 `~/Desktop/paper/`。`work/` 临时文件、`outputs/` 展示副本不能替代正式归档。声称“已保存”前，必须核对实际 PDF、版本、页数、附录章节、文本、索引和最终绝对路径；从工作区复制时核对 PDF 校验和。缺失源码/代码或权限、网络导致无法归档时如实说明。
+
+当前版本放论文目录根部；独立附录保存为 `supplemental.pdf` 并在 `supplemental/` 中提取文本和图表；其他保留版本存入 `versions/<来源-版本-日期>/`。LaTeX 必须与所在目录的 PDF 同版本，旧源码只能在对应版本下作对照。切换版本时保留用户笔记与修改。
 
 ### 笔记：你说记录，才记录
 
@@ -135,23 +154,25 @@ python3 -m venv .venv
 
 ### 直接运行材料脚本
 
-在仓库根目录运行；名称、年份和 venue 应先由用户或 Agent 核实：
+在仓库根目录运行；名称、发表年份、venue 和所选 PDF 版本应先核实。自动命名时指定 `--venue` 必须同时提供 `--year`，避免误用 arXiv 年份：
 
 ```bash
 # 导入本地 PDF；没有正式 venue 时省略 --venue
 .venv/bin/python scripts/fetch_paper.py "/path/to/paper.pdf" \
   --field "医学影像" --name "已核实的论文简称" --year 2025 --venue MICCAI
 
-# 从 arXiv 准备材料；这是 π0 的预印本示例
-.venv/bin/python scripts/fetch_paper.py 2410.24164 \
-  --field "具身智能" --name "pi0" --year 2024
+# 准备已选定的 arXiv 版本；命名仍使用已核实的正式发表信息
+# 检查附录及版本时间后替换占位符
+.venv/bin/python scripts/fetch_paper.py "<选定的带版本号 arXiv ID>" \
+  --field "<领域>" --name "<简称>" --year <发表年份> --venue <会议期刊简称>
 
-# 已有目录：补充缺失材料，重新生成文本、索引和自动图表
-.venv/bin/python scripts/fetch_paper.py "$HOME/Desktop/paper/具身智能/pi0_2024"
+# 单独处理同版本的独立附录；同时在论文目录根部保留 supplemental.pdf
+.venv/bin/python scripts/fetch_paper.py "/path/to/supplemental.pdf" \
+  --dest "/path/to/paper-directory/supplemental" --no-clone
 
-# 未自动找到代码时，手动指定已确认的官方仓库
-.venv/bin/python scripts/fetch_paper.py "$HOME/Desktop/paper/具身智能/pi0_2024" \
-  --code https://github.com/Physical-Intelligence/openpi
+# 复用已有目录，可补充已确认的官方代码仓库
+.venv/bin/python scripts/fetch_paper.py "/path/to/paper-directory" \
+  --code "<已确认的官方仓库 URL>"
 
 # 从 PDF 的第 4 页裁出局部；坐标为 0–1 比例
 .venv/bin/python scripts/crop.py "/path/to/paper.pdf" \
@@ -182,7 +203,7 @@ python3 -m venv .venv
 - 仓库代码默认只读，不替用户运行论文的训练脚本或安装其依赖。
 - 不提供训练结果复现保证。材料准备成功也不代表论文结论已被验证。
 
-材料流程已用合成 PDF 验证：本地导入、目录命名、源码展开、图表提取、局部裁剪、已有材料保护及不自动生成笔记。URL 下载和代码克隆分支使用模拟响应测试，尚未做真实网络下载的端到端验证。
+材料流程已用合成 PDF 验证：本地导入、目录命名（含发表年与预印本修订年份）、源码展开、图表提取、局部裁剪、已有材料保护及不自动生成笔记。URL 下载和代码克隆分支使用模拟响应测试，尚未做真实网络下载的端到端验证。
 
 运行同类检查：
 

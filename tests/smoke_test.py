@@ -105,6 +105,21 @@ run(other, "--dest", dest, "--no-clone", expected=2)
 assert (dest/"paper.pdf").read_bytes() == original
 print("PASS: default library path and collision protection")
 
+# Publication naming remains stable even when the selected PDF is a preprint.
+args = SimpleNamespace(name="VCD", year=2024, venue="CVPR")
+assert f.paper_name(args, {"published": "2023-11-28", "updated": "2025-01-01"}) == "VCD_2024_CVPR"
+args.year = None
+try:
+    f.paper_name(args, {"published": "2023-11-28"})
+except ValueError as exc:
+    assert "--year" in str(exc)
+else:
+    raise AssertionError("Venue naming must require an explicit publication year")
+args.venue = None
+assert f.paper_name(args, {"published": "2023-11-28", "updated": "2025-01-01"}) == "VCD_2025"
+assert f.paper_name(args, {"published": "2023-11-28"}) == "VCD_2023"
+print("PASS: publication year independent of PDF date; preprint revision-year fallback")
+
 # A public-PDF download branch with deterministic network fixture.
 download_dest = base/"download"
 with patch.object(sys, "argv", ["fetch_paper.py", "https://example.org/fixture.pdf",

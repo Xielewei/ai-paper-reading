@@ -1,6 +1,6 @@
 # AI Paper Reading
 
-**English** | [简体中文](README.zh-CN.md)
+**English** | [Chinese](README.zh-CN.md)
 
 **Understand a paper's motivation, model architecture, and experimental evidence.**
 
@@ -110,7 +110,10 @@ The default paper library is **`~/Desktop/paper/`**, organized by **field → pa
 └── Medical Imaging/
     └── <short-name>_<year>_MICCAI/
         ├── paper.pdf
-        ├── source/              # arXiv LaTeX sources, when available
+        ├── supplemental.pdf     # Separate appendix, when provided
+        ├── supplemental/        # Appendix PDF, text, outline, and figures
+        ├── versions/            # Other retained versions, each in its own folder
+        ├── source/              # LaTeX sources matching the selected PDF, if available
         ├── paper.tex            # Flattened source for reading and navigation
         ├── paper.txt            # Text extracted page by page
         ├── outline.md           # Section and equation locations
@@ -126,13 +129,29 @@ The default paper library is **`~/Desktop/paper/`**, organized by **field → pa
 
 This directory tree uses placeholders rather than describing a real paper.
 
-**Naming:** use the paper's stated acronym or short name first; otherwise use its subtitle, or its full title if no subtitle is available. Append the year. Add a verified publication venue using its abbreviation, such as MICCAI, CVPR, or TMI. Do not guess a venue for a preprint or an unconfirmed publication.
+**Naming follows the verified publication.** Use the paper's stated acronym or short name first; otherwise use its subtitle, then its full title. For an officially accepted or published paper, always use the publication year and venue abbreviation, such as `VCD_2024_CVPR`, even when the selected PDF comes from arXiv. A submission alone does not establish acceptance. Only when no publication is confirmed should the directory use the selected preprint version's year and omit the venue.
+
+### Which PDF version is selected?
+
+Unless you explicitly request a particular version, the agent checks the official publication page, arXiv revision history, and author project page:
+
+1. If any version provides an appendix, choose the **latest version with both the main paper and appendix available**. A single combined PDF and a matching main-paper/supplement pair both qualify.
+2. If every version provides an appendix, choose the latest. If no version has an appendix, choose the latest main paper.
+3. Compare actual release or revision dates, including arXiv version numbers and update dates. Download times and local file timestamps do not determine recency; a conference PDF is not automatically the newest.
+
+An unavailable or unverified appendix is recorded as such, rather than treated as nonexistent. The agent follows up on missing attachments and reports unresolved gaps or ambiguous dates. Appendices from different versions are not combined to claim completeness. The publication identity used for naming and the PDF version used for reading are recorded separately in `meta.json`, along with candidate versions, source URLs, appendix status, and the selection reason. The agent performs this comparison; `fetch_paper.py` prepares the supplied material and does not discover or rank versions automatically.
+
+### Final storage and verification
 
 Supported inputs include local PDFs, direct PDF URLs, arXiv IDs or links, and existing paper directories. You can also ask the agent to locate a paper by title. Local PDFs are copied while preserving the original; revisiting a paper reuses its existing directory.
 
+The final library is `~/Desktop/paper/` unless you specify another location. Temporary `work/` files and display copies in `outputs/` do not replace that archive. Before saying the paper is saved, the agent checks the PDFs, version identities, page counts, appendix sections, extracted text, indexes, and final absolute paths. Copies made from a staging directory are checked against PDF checksums. Missing sources or code, and any access failure that prevents final storage, are reported explicitly.
+
+Keep the selected version at the paper directory root. Save a separate appendix as `supplemental.pdf` and process it under `supplemental/`; retain other versions under `versions/<source-version-date>/`. LaTeX sources must match the PDF in the same directory. Older sources may be retained with their own version for comparison, but do not substitute for the selected PDF. Preserve user notes and edits when changing versions.
+
 ### Notes only when you ask
 
-**No reading-notes file (`精读笔记.md`) is created by default. Conversations and stage-by-stage Q&A are not automatically saved.**
+**No reading-notes file is created by default. Conversations and stage-by-stage Q&A are not automatically saved.**
 
 Ask explicitly to “turn this into notes” or “record these questions” to create or update notes within the requested scope. Material outlines and figure indexes are still generated automatically for navigation.
 
@@ -140,23 +159,26 @@ Ask explicitly to “turn this into notes” or “record these questions” to 
 
 ### Run the preparation scripts directly
 
-Run these commands from the repository root. The user or agent should first verify the paper name, year, and venue:
+Run these commands from the repository root. The user or agent should first verify the paper name, publication year, venue, and selected PDF version. Automatic naming with `--venue` requires an explicit `--year` to avoid silently using an arXiv date:
 
 ```bash
 # Import a local PDF; omit --venue if there is no confirmed publication venue.
 .venv/bin/python scripts/fetch_paper.py "/path/to/paper.pdf" \
   --field "Medical Imaging" --name "VerifiedShortName" --year 2025 --venue MICCAI
 
-# Prepare materials from arXiv; this example uses the pi0 preprint.
-.venv/bin/python scripts/fetch_paper.py 2410.24164 \
-  --field "Embodied AI" --name "pi0" --year 2024
+# Prepare an already selected arXiv version, using verified publication metadata.
+# Replace the placeholders after checking appendix availability and version dates.
+.venv/bin/python scripts/fetch_paper.py "<selected-arxiv-id-with-version>" \
+  --field "<field>" --name "<short-name>" --year <publication-year> --venue <venue>
 
-# Revisit a directory: fill missing materials and rebuild text, indexes, and automatic crops.
-.venv/bin/python scripts/fetch_paper.py "$HOME/Desktop/paper/Embodied AI/pi0_2024"
+# Process a matching standalone appendix in its own directory.
+# Also retain a copy named supplemental.pdf at the main paper directory root.
+.venv/bin/python scripts/fetch_paper.py "/path/to/supplemental.pdf" \
+  --dest "/path/to/paper-directory/supplemental" --no-clone
 
-# Supply a verified official repository if automatic discovery did not find it.
-.venv/bin/python scripts/fetch_paper.py "$HOME/Desktop/paper/Embodied AI/pi0_2024" \
-  --code https://github.com/Physical-Intelligence/openpi
+# Revisit a directory, optionally supplying a verified official repository.
+.venv/bin/python scripts/fetch_paper.py "/path/to/paper-directory" \
+  --code "<verified-official-repository-url>"
 
 # Crop a region from PDF page 4; coordinates are normalized to 0–1.
 .venv/bin/python scripts/crop.py "/path/to/paper.pdf" \
@@ -187,7 +209,7 @@ If `figures/` already contains user-managed images, automatic crops go into `fig
 - Paper code is read by default. Training scripts and their dependencies are not run or installed on your behalf unless requested.
 - Preparing materials does not validate the paper's conclusions or guarantee reproducible training results.
 
-Synthetic-PDF checks cover local import, directory naming, LaTeX expansion, figure and table extraction, detail cropping, preservation of existing materials, and the absence of automatic notes. URL downloads and code cloning are tested with mocked responses; live network downloads have not yet been validated end to end.
+Synthetic-PDF checks cover local import, directory naming (including publication-year and preprint-revision handling), LaTeX expansion, figure and table extraction, detail cropping, preservation of existing materials, and the absence of automatic notes. URL downloads and code cloning are tested with mocked responses; live network downloads have not yet been validated end to end.
 
 Run the checks with:
 

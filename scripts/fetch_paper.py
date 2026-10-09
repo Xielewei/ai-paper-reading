@@ -4,13 +4,15 @@
 准备 AI 论文材料；保留已有 PDF/源码/代码，重新生成文本、索引和自动图表。不生成阅读笔记。
 改编自 skJack/kelip-paper-reading（MIT，见 ../LICENSE）。
 
-  python3 fetch_paper.py 2410.24164 --field 机器人 --name pi0 --year 2024
+  python3 fetch_paper.py <选定版本的arXiv-ID> --field <领域> --name <简称> --year <发表年> --venue <会议简称>
   python3 fetch_paper.py /path/to/paper.pdf --field 医学影像 --name NAME --year 2025 --venue MICCAI
   python3 fetch_paper.py /path/to/existing/paper-directory
 
 放哪：已有论文目录就地补全；--dest 指定完整目录；
 否则 [--root ~/Desktop/paper]/<--field>/<--name 或标题>_<--year>[_<--venue>]。
---year 未提供时尝试 arXiv published 年份；会议版本请明确传入已核实的发表年。
+自动命名时指定 --venue 必须同时传入已核实的 --year，即使 PDF 选自 arXiv。
+无 venue 且 --year 未提供时尝试 arXiv updated 年份，再回退 published 年份。
+版本比较及附录发现由 agent 按 SKILL.md 执行；本脚本仅准备指定材料。
 沿用原版自动发现并浅克隆官方代码的流程，--code 可手动补充仓库。
 代码保存在 <论文目录>/code，--code-dir 可覆盖，--no-clone 不克隆。
 
@@ -143,7 +145,9 @@ def paper_name(args, meta):
     title = args.name or meta.get("title")
     if not title:
         raise ValueError("无法确定标题，请先查看 PDF 并用 --name 指定论文名")
-    year = str(args.year or meta.get("published", "")[:4])
+    if args.venue and args.year is None:
+        raise ValueError("指定 --venue 自动命名时必须同时用 --year 指定正式发表年份，不能沿用 arXiv 年份")
+    year = str(args.year or (meta.get("updated") or meta.get("published", ""))[:4])
     if not re.fullmatch(r"(19|20)\d{2}", year):
         raise ValueError("无法确定年份，请用 --year 指定已核实的发表年份")
     parts = [path_component(title), year]
