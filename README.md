@@ -112,7 +112,7 @@ The default paper library is **`~/Desktop/paper/`**, organized by **field → pa
         ├── paper.pdf
         ├── supplemental.pdf     # Separate appendix, when provided
         ├── supplemental/        # Appendix PDF, text, outline, and figures
-        ├── versions/            # Other retained versions, each in its own folder
+        ├── versions/            # Secondary versions: main/appendix PDFs only
         ├── source/              # LaTeX sources matching the selected PDF, if available
         ├── paper.tex            # Flattened source for reading and navigation
         ├── paper.txt            # Text extracted page by page
@@ -145,9 +145,13 @@ An unavailable or unverified appendix is recorded as such, rather than treated a
 
 Supported inputs include local PDFs, direct PDF URLs, arXiv IDs or links, and existing paper directories. You can also ask the agent to locate a paper by title. Local PDFs are copied while preserving the original; revisiting a paper reuses its existing directory.
 
-The final library is `~/Desktop/paper/` unless you specify another location. Temporary `work/` files and display copies in `outputs/` do not replace that archive. Before saying the paper is saved, the agent checks the PDFs, version identities, page counts, appendix sections, extracted text, indexes, and final absolute paths. Copies made from a staging directory are checked against PDF checksums. Missing sources or code, and any access failure that prevents final storage, are reported explicitly.
+The final library is `~/Desktop/paper/` unless you specify another location. Temporary `work/` files and display copies in `outputs/` do not replace that archive. Before saying the paper is saved, the agent checks the selected reading version’s PDFs, version identity, page counts, appendix sections, extracted text, indexes, and final absolute paths. Copies made from a staging directory are checked against PDF checksums. Missing sources or code, and any access failure that prevents final storage, are reported explicitly.
 
-Keep the selected version at the paper directory root. Save a separate appendix as `supplemental.pdf` and process it under `supplemental/`; retain other versions under `versions/<source-version-date>/`. LaTeX sources must match the PDF in the same directory. Older sources may be retained with their own version for comparison, but do not substitute for the selected PDF. Preserve user notes and edits when changing versions.
+Keep the selected reading version at the paper directory root, with its full extracted materials. Save its separate appendix as `supplemental.pdf` and process it under `supplemental/`. LaTeX sources must match this selected PDF; if only older sources are available, record the missing source and read the selected PDF without retaining those older sources.
+
+**Secondary versions retain only the main-paper and appendix PDFs** under `versions/<source-version-date>/`. If the appendix is already included, keep the single combined `paper.pdf`; otherwise also keep `supplemental.pdf`. Download or copy these PDFs directly, without running `fetch_paper.py`, extracting text, outlines, or figures, downloading sources or code, or creating per-version metadata files. Record their provenance, dates, page counts, appendix status, and paths in the paper root's `meta.json`. Verify these PDFs without requiring extracted materials.
+
+When a secondary version becomes the selected reading version, prepare its full materials then. When a version becomes secondary, remove its generated materials, downloaded sources, and duplicate code, retaining only its PDFs. Identify and preserve user notes, annotations, and manual edits separately at the paper root before cleanup.
 
 ### Notes only when you ask
 
